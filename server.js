@@ -13,7 +13,7 @@ app.use(bodyParser.json());
 app.use(cors());
 // app.use(cookieParser())
 
-
+console.log("git commnads");
 app.use("/", routes)
 
 app.get("/",(req,res)=>res.send("hello from express"));
