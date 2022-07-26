@@ -1,4 +1,4 @@
-const { signIn,users, getFileUserInfo, getUserById, addUser, deleteUser, uploadImage, uploadMultipleImages} = require('./../controllers/user');
+const { signIn,users, getFileUserInfo, getUserById, addUser, deleteUser, uploadImage, uploadMultipleImages,signUp} = require('./../controllers/user');
 
 const multer  = require('multer');
 // const upload = multer({ dest: './uploads/' });
@@ -20,16 +20,17 @@ const upload = multer({ storage: storage })
 module.exports = (router) => {
   // router.get('/ping', status);
   router.get('/users', users);
-  // router.post('/addusers', add);
+  // router.post('/addusers', addUser);
   // router.post('/editusers', edit);
   router.post('/signIn', signIn);
-  router.get('/listUsers', getFileUserInfo);
-  router.get('/:id', getUserById);
-  router.post('/addUser', addUser);
-  router.post('/deleteUser', deleteUser);
-  router.get('/getUserById/:id', getUserById);
-  router.post('/uploadUserImage',upload.single('profilePic'), uploadImage)
+  router.post('/signup', signUp);
+  // router.get('/listUsers', getFileUserInfo);
+  // router.get('/:id', getUserById);
+  // router.post('/addUser', addUser);
+  // router.post('/deleteUser', deleteUser);
+  // router.get('/getUserById/:id', getUserById);
+  // router.post('/uploadUserImage',upload.single('profilePic'), uploadImage)
 
-  router.post('/uploadMultipleImages',upload.array('profilePic'), uploadMultipleImages)
+  // router.post('/uploadMultipleImages',upload.array('profilePic'), uploadMultipleImages)
 
 };

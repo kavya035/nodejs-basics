@@ -5,30 +5,48 @@ const jwt = require("jsonwebtoken");
 const { JWT_SECRET_KEY:jwtKey,JWT_EXPIRY_SECONDS:jwtExpirySeconds } = process.env;
 
 const signIn = async (payload) => {
-    const { username, password } = payload;
+    const { fname, password } = payload;
   
     try {
         
         // need to check in database wethere data is validate or  not
-        const data =await db.query(`SELECT * FROM USERS WHERE fname='${username}' and password='${password}'`);
+        const { rowCount } =await db.query(`SELECT * FROM USERS WHERE fname='${fname}' and password='${password}'`);
         // console.log(data);
-        if( data.rowCount === 0 ) {
+        if( rowCount === 0 ) {
             return { errors: [ { name: 'Invalid Data', message: 'No Data found' } ] };
         }
-
-        const token = jwt.sign({ username }, jwtKey, {
+        const token = jwt.sign({ fname }, jwtKey, {
             algorithm: "HS256",
             expiresIn: jwtExpirySeconds,
         })
         console.log("token:", token)
     
-        return { doc: { token, message: 'successfully stored.' } };
+        return { doc: { token, message: 'successfully Logined.' } };
     } catch (err) {
       console.log(err);
       return { errors: [ { name: 'transaction', message: 'transaction failed.' } ] };
     }
   };
 
+  const signUp = async (payload) => {
+    try{
+      const { fname,lname,password  } = payload;
+      console.log(fname,lname,password);
+      let { rowCount } = await db.query(
+        `INSERT INTO users (fname,lname,password) values ($1,$2,$3) returning * `,[fname,lname,password]
+      )
+      console.log(rowCount);
+      if(rowCount>0)
+      {
+        return {doc:{status:"sucesses", message: "Inserted Sucessfully"}}
+      }
+    }
+    catch(err){
+    return { errors: [ { name: 'transaction', message: 'transaction failed.' } ] };
+    }
+  };
+
   module.exports = {
-    signIn
+    signIn,
+    signUp
   }

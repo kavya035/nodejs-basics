@@ -2,67 +2,33 @@
 const fs = require('fs');
 const path = require('path');
 const { Users } = require('../services');
-// const status = (req, res) => {
-//     res.send({ status: 'ok', version: 1.0, name: "nodejs-boilerplate" });
-//   };
 
-//   const users = (req, res) => {
-//     res.send({ status: 'ok', version: 1.0, name: "nodejs-boilerplate" });
-//   };
 
-//   const add = (req, res) => {
-//     res.send({ status: 'ok', version: 1.0, name: "nodejs-boilerplate" });
-//   };
-
-//   const edit = (req, res) => {
-//     res.send({ status: 'ok', version: 1.0, name: "nodejs-boilerplate" });
-//   };
-
-const userData = {
-  "user1" : {
-     "name" : "mahesh",
-     "password" : "password1",
-     "profession" : "teacher",
-     "id": 1
-  },
-  
-  "user2" : {
-     "name" : "suresh",
-     "password" : "password2",
-     "profession" : "librarian",
-     "id": 2
-  },
-  
-  "user3" : {
-     "name" : "ramesh",
-     "password" : "password3",
-     "profession" : "clerk",
-     "id": 3
-  }
-}
-
-  const signIn = async (req,res) => {
-    try{
-      const { username, password } = req.body
-      // if username or password is not provided
-      if (!username || !password ) {
-        // return 401 error is username or password doesn't exist
-        return res.status(401).end()
-      }
-
-      //check and get data from DB 
-      const { doc, errors } =await Users.signIn({username, password});
-      console.log(doc);
-      if(doc){
-        res.send(doc);
-      }
-      res.send(errors)
-    } catch(e) {
-      res.send(e)
+  const userData = {
+    "user1" : {
+      "name" : "mahesh",
+      "password" : "password1",
+      "profession" : "teacher",
+      "id": 1
+    },
+    
+    "user2" : {
+      "name" : "suresh",
+      "password" : "password2",
+      "profession" : "librarian",
+      "id": 2
+    },
+    
+    "user3" : {
+      "name" : "ramesh",
+      "password" : "password3",
+      "profession" : "clerk",
+      "id": 3
     }
-   
-  };
+  }
 
+
+  // Curd operation without connecting DB
   const users = async (req,res) => {
     res.send(userData)
   }
@@ -107,6 +73,7 @@ const deleteUser = async(req,res) => {
  });
 }
 
+//File uploading
 const uploadImage = async(req,res) => {
   console.log(req);
   res.send({status:true});
@@ -116,7 +83,44 @@ const uploadMultipleImages = async(req,res) => {
   console.log(req);
   res.send({status:true});
 }
+
+// SERVER REST API's
+const signUp = async(req,res) => {
+  try{
+    const{body:{fname,lname,password}} = req;
+    const { doc, errors } = await Users.signUp({fname,lname,password});
+    if(doc){
+      res.send(doc);
+    }
+    res.send(errors)
+  }
+  catch(e){
+    res.send(e)
+  }
+}
+
+const signIn = async (req,res) => {
+  try{
+    const { body:{ fname, password } } = req;
+    // if username or password is not provided
+    if (!fname || !password ) {
+      // return 401 error is fname or password doesn't exist
+      return res.status(401).end()
+    }
+
+    //check and get data from DB 
+    const { doc, errors } =await Users.signIn({fname, password});
+    console.log(doc);
+    if(doc){
+      res.send(doc);
+    }
+    res.send(errors)
+  } catch(e) {
+    res.send(e)
+  }
+ 
+};
   
    
-  module.exports = { signIn, users, getFileUserInfo, getUserById, addUser,deleteUser, uploadImage, uploadMultipleImages};
+  module.exports = { signIn, users, getFileUserInfo, getUserById, addUser,deleteUser, uploadImage, uploadMultipleImages, signUp};
   
