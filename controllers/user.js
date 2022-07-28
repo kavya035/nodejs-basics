@@ -56,7 +56,7 @@ const { Users } = require('../services');
  }
 
  const addUser = async(req,res) => {
-  const { body:{name,password,profession,id}} = req;
+  const { body:{name,password,profession,id},header:{authorization}} = req;
   fs.readFile( __dirname + "/" + "../users.json", 'utf8', function (err, data) {
     data = JSON.parse( data );
     data['user4'] ={ "name": name, "password":password, "profession":profession, "id": id };
@@ -120,7 +120,21 @@ const signIn = async (req,res) => {
   }
  
 };
+
+const usersList = async(req,res) => {
+  try{
+    const {body:{userId}, headers: {authorization}} = req;
+    const { doc, errors } = await Users.getUsersList({userId},authorization);
+    if(doc){
+      res.send(doc);
+    }
+    res.send(errors)
+  }
+  catch(e){
+    res.send(e)
+  }
+};
   
    
-  module.exports = { signIn, users, getFileUserInfo, getUserById, addUser,deleteUser, uploadImage, uploadMultipleImages, signUp};
+  module.exports = { signIn, users, getFileUserInfo, getUserById, addUser,deleteUser, uploadImage, uploadMultipleImages, signUp, usersList};
   

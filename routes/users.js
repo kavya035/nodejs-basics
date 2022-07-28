@@ -1,4 +1,4 @@
-const { signIn,users, getFileUserInfo, getUserById, addUser, deleteUser, uploadImage, uploadMultipleImages,signUp} = require('./../controllers/user');
+const { signIn,users, getFileUserInfo, getUserById, addUser, deleteUser, uploadImage, uploadMultipleImages,signUp,usersList} = require('./../controllers/user');
 
 const multer  = require('multer');
 // const upload = multer({ dest: './uploads/' });
@@ -24,6 +24,8 @@ module.exports = (router) => {
   // router.post('/editusers', edit);
   router.post('/signIn', signIn);
   router.post('/signup', signUp);
+  router.post('/getUsersList', usersList);
+
   // router.get('/listUsers', getFileUserInfo);
   // router.get('/:id', getUserById);
   // router.post('/addUser', addUser);

@@ -1,8 +1,9 @@
-const jsonwebtoken = require('jsonwebtoken');
 const { db } = require('./../database/config');
 const dotEnv = require("dotenv").config();
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET_KEY:jwtKey,JWT_EXPIRY_SECONDS:jwtExpirySeconds } = process.env;
+
+const {checkAuthorization} = require('../utils/helper')
 
 const signIn = async (payload) => {
     const { fname, password } = payload;
@@ -28,25 +29,56 @@ const signIn = async (payload) => {
     }
   };
 
-  const signUp = async (payload) => {
+const signUp = async (payload) => {
+  try{
+    const { fname,lname,password  } = payload;
+    console.log(fname,lname,password);
+    let { rowCount } = await db.query(
+      `INSERT INTO users (fname,lname,password) values ($1,$2,$3) returning * `,[fname,lname,password]
+    )
+    console.log(rowCount);
+    if(rowCount>0)
+    {
+      return {doc:{status:"sucesses", message: "Inserted Sucessfully"}}
+    }
+  }
+  catch(err){
+  return { errors: [ { name: 'transaction', message: 'transaction failed.' } ] };
+  }
+};
+
+const getUsersList = async (payload,authorization) => {
     try{
-      const { fname,lname,password  } = payload;
-      console.log(fname,lname,password);
-      let { rowCount } = await db.query(
-        `INSERT INTO users (fname,lname,password) values ($1,$2,$3) returning * `,[fname,lname,password]
-      )
-      console.log(rowCount);
-      if(rowCount>0)
-      {
-        return {doc:{status:"sucesses", message: "Inserted Sucessfully"}}
+      if (authorization) {
+          const { errors } = await checkAuthorization(authorization);
+          if (errors) {
+            return { errors };
+          }
+          const { userId } = payload;
+          let subCondition = '';
+          if(userId){
+          subCondition = `where id = ${userId}`
+          }
+          const data = await db.query(`SELECT * FROM users ${subCondition}`);
+          console.log(JSON.stringify(data));
+          return {doc:data.rows};
+        
       }
+
+      return { errors: [ { name: 'Authenticated error', message: 'Please enter authorization token' } ] };
+
+      
     }
-    catch(err){
-    return { errors: [ { name: 'transaction', message: 'transaction failed.' } ] };
+    catch(e){
+      console.log(e);
+      return {errors:`Internal server error`};
     }
-  };
+};
+
+  
 
   module.exports = {
     signIn,
-    signUp
+    signUp,
+    getUsersList
   }
